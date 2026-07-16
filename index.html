@@ -582,34 +582,31 @@
 </pre>
     </details>
     <details class="wf-json">
-      <summary>Workflow 4 — OpenRouter Agent (Webhook) <span class="fn">04-openrouter-agent-webhook.json</span></summary>
+      <summary>Workflow 4 — OpenRouter Agent (Chat) <span class="fn">04-openrouter-agent-chat.json</span></summary>
       <button class="copy-btn" type="button">Copy JSON</button>
       <pre class="code json-src">{
-  &quot;name&quot;: &quot;04 - OpenRouter Agent (Webhook)&quot;,
+  &quot;name&quot;: &quot;04 - OpenRouter Agent (Chat)&quot;,
   &quot;nodes&quot;: [
     {
       &quot;parameters&quot;: {
-        &quot;httpMethod&quot;: &quot;POST&quot;,
-        &quot;path&quot;: &quot;fest-ask&quot;,
-        &quot;responseMode&quot;: &quot;responseNode&quot;,
         &quot;options&quot;: {}
       },
-      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000001&quot;,
-      &quot;name&quot;: &quot;Webhook&quot;,
-      &quot;type&quot;: &quot;n8n-nodes-base.webhook&quot;,
-      &quot;typeVersion&quot;: 2,
+      &quot;id&quot;: &quot;8af80370-b536-4d60-b34d-86804df3ba23&quot;,
+      &quot;name&quot;: &quot;When chat message received&quot;,
+      &quot;type&quot;: &quot;@n8n/n8n-nodes-langchain.chatTrigger&quot;,
+      &quot;typeVersion&quot;: 1.1,
       &quot;position&quot;: [
-        260,
-        300
+        -496,
+        16
       ],
-      &quot;webhookId&quot;: &quot;fest-ask-webhook&quot;
+      &quot;webhookId&quot;: &quot;fest-chat-webhook&quot;
     },
     {
       &quot;parameters&quot;: {
         &quot;method&quot;: &quot;POST&quot;,
         &quot;url&quot;: &quot;https://openrouter.ai/api/v1/chat/completions&quot;,
         &quot;authentication&quot;: &quot;predefinedCredentialType&quot;,
-        &quot;nodeCredentialType&quot;: &quot;httpHeaderAuth&quot;,
+        &quot;nodeCredentialType&quot;: &quot;openRouterApi&quot;,
         &quot;sendHeaders&quot;: true,
         &quot;headerParameters&quot;: {
           &quot;parameters&quot;: [
@@ -621,27 +618,31 @@
         },
         &quot;sendBody&quot;: true,
         &quot;specifyBody&quot;: &quot;json&quot;,
-        &quot;jsonBody&quot;: &quot;={\n  \&quot;model\&quot;: \&quot;meta-llama/llama-3.1-8b-instruct:free\&quot;,\n  \&quot;messages\&quot;: [\n    {\n      \&quot;role\&quot;: \&quot;system\&quot;,\n      \&quot;content\&quot;: \&quot;You are a friendly assistant that answers student questions about Campus Tech Fest registration in 2-3 short sentences.\&quot;\n    },\n    {\n      \&quot;role\&quot;: \&quot;user\&quot;,\n      \&quot;content\&quot;: {{ JSON.stringify($json.body.question) }}\n    }\n  ]\n}&quot;,
+        &quot;jsonBody&quot;: &quot;={{ JSON.stringify({\n  model: \&quot;meta-llama/llama-3.1-8b-instruct\&quot;,\n  messages: [\n    {\n      role: \&quot;system\&quot;,\n      content: \&quot;You are a friendly assistant that answers student questions about Campus Tech Fest registration in 2-3 short sentences.\&quot;\n    },\n    {\n      role: \&quot;user\&quot;,\n      content: $json.chatInput\n    }\n  ]\n}) }}&quot;,
         &quot;options&quot;: {}
       },
-      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000002&quot;,
+      &quot;id&quot;: &quot;4e78b254-958e-418b-b482-95754b3363a2&quot;,
       &quot;name&quot;: &quot;Ask AI Agent (OpenRouter)&quot;,
       &quot;type&quot;: &quot;n8n-nodes-base.httpRequest&quot;,
       &quot;typeVersion&quot;: 4.2,
       &quot;position&quot;: [
-        480,
-        300
-      ]
+        -256,
+        16
+      ],
+      &quot;credentials&quot;: {
+        &quot;openRouterApi&quot;: {
+          &quot;id&quot;: &quot;xIOB7VDU0zhXQvDa&quot;,
+          &quot;name&quot;: &quot;OpenRouter account&quot;
+        }
+      }
     },
     {
       &quot;parameters&quot;: {
-        &quot;mode&quot;: &quot;manual&quot;,
-        &quot;duplicateItem&quot;: false,
         &quot;assignments&quot;: {
           &quot;assignments&quot;: [
             {
               &quot;id&quot;: &quot;s1&quot;,
-              &quot;name&quot;: &quot;answer&quot;,
+              &quot;name&quot;: &quot;output&quot;,
               &quot;type&quot;: &quot;string&quot;,
               &quot;value&quot;: &quot;={{ $json.choices[0].message.content }}&quot;
             }
@@ -649,33 +650,18 @@
         },
         &quot;options&quot;: {}
       },
-      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000003&quot;,
+      &quot;id&quot;: &quot;5f0f8ad5-e7fd-4301-aedc-090dd57d7a10&quot;,
       &quot;name&quot;: &quot;Extract Answer&quot;,
       &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
       &quot;typeVersion&quot;: 3.4,
       &quot;position&quot;: [
-        700,
-        300
-      ]
-    },
-    {
-      &quot;parameters&quot;: {
-        &quot;respondWith&quot;: &quot;json&quot;,
-        &quot;responseBody&quot;: &quot;={\n  \&quot;answer\&quot;: {{ JSON.stringify($json.answer) }}\n}&quot;,
-        &quot;options&quot;: {}
-      },
-      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000004&quot;,
-      &quot;name&quot;: &quot;Respond to Webhook&quot;,
-      &quot;type&quot;: &quot;n8n-nodes-base.respondToWebhook&quot;,
-      &quot;typeVersion&quot;: 1.1,
-      &quot;position&quot;: [
-        920,
-        300
+        -32,
+        16
       ]
     }
   ],
   &quot;connections&quot;: {
-    &quot;Webhook&quot;: {
+    &quot;When chat message received&quot;: {
       &quot;main&quot;: [
         [
           {
@@ -696,24 +682,16 @@
           }
         ]
       ]
-    },
-    &quot;Extract Answer&quot;: {
-      &quot;main&quot;: [
-        [
-          {
-            &quot;node&quot;: &quot;Respond to Webhook&quot;,
-            &quot;type&quot;: &quot;main&quot;,
-            &quot;index&quot;: 0
-          }
-        ]
-      ]
     }
   },
   &quot;active&quot;: false,
   &quot;settings&quot;: {
     &quot;executionOrder&quot;: &quot;v1&quot;
   },
-  &quot;pinData&quot;: {}
+  &quot;pinData&quot;: {},
+  &quot;meta&quot;: {
+    &quot;instanceId&quot;: &quot;216ac74e9d21a5b933f76a5c675c45092ff21b6f34c43c8782dd14ab7437c52d&quot;
+  }
 }
 </pre>
     </details>
@@ -826,33 +804,28 @@
 
   <section class="card" id="s5">
     <div class="badge-row"><span class="badge level-medium">Workflow 4 · Basic-Medium</span></div>
-    <h2>A Small AI Agent Behind a Webhook</h2>
-    <p class="goal">A student POSTs a question about the fest; n8n forwards it to a real language model through OpenRouter and replies with the answer.</p>
+    <h2>A Small AI Agent Behind a Chat Trigger</h2>
+    <p class="goal">A student sends a chat message; n8n forwards it to a real language model through OpenRouter and returns the answer directly in the chat.</p>
     <div class="flow">
-      <span class="node-chip trigger">Webhook</span><span class="flow-arrow">→</span>
+      <span class="node-chip trigger">When chat message received</span><span class="flow-arrow">→</span>
       <span class="node-chip data">Ask AI Agent (OpenRouter)</span><span class="flow-arrow">→</span>
-      <span class="node-chip">Extract Answer</span><span class="flow-arrow">→</span>
-      <span class="node-chip action">Respond</span>
+      <span class="node-chip">Extract Answer</span>
     </div>
     <table class="nodes">
       <tr><th>Node</th><th>Type</th><th>Config</th></tr>
-      <tr><td>Webhook</td><td class="type">Webhook</td><td>POST, path <code>fest-ask</code>. Body: <code>{ "question": "..." }</code>.</td></tr>
-      <tr><td>Ask AI Agent (OpenRouter)</td><td class="type">HTTP Request</td><td>POST <code>https://openrouter.ai/api/v1/chat/completions</code>, Header Auth credential, JSON body with model + system/user messages.</td></tr>
-      <tr><td>Extract Answer</td><td class="type">Set</td><td><code>answer</code> = <code>{{ $json.choices[0].message.content }}</code>.</td></tr>
-      <tr><td>Respond to Webhook</td><td class="type">Respond to Webhook</td><td>Returns <code>{ "answer": "..." }</code>.</td></tr>
+      <tr><td>When chat message received</td><td class="type">Chat Trigger</td><td>Built-in n8n chat UI. Input arrives as <code>{{ $json.chatInput }}</code>.</td></tr>
+      <tr><td>Ask AI Agent (OpenRouter)</td><td class="type">HTTP Request</td><td>POST <code>https://openrouter.ai/api/v1/chat/completions</code>, OpenRouter API credential, JSON body with model + system/user messages.</td></tr>
+      <tr><td>Extract Answer</td><td class="type">Set</td><td><code>output</code> = <code>{{ $json.choices[0].message.content }}</code>.</td></tr>
     </table>
-    <div class="warn"><b>Before running this one:</b> the node imports with no credential selected — open "Ask AI Agent (OpenRouter)", and under Authentication choose your OpenRouter Header Auth credential (see Section 00) before running.</div>
+    <div class="warn"><b>Before running this one:</b> open "Ask AI Agent (OpenRouter)" and, under Authentication, choose your OpenRouter API credential (see Section 00) before running.</div>
     <h3 class="section-h">Your checklist</h3>
     <ul class="checklist">
-      <li><input type="checkbox" id="wf4-1"><label for="wf4-1">Import <code>04-openrouter-agent-webhook.json</code>.</label></li>
+      <li><input type="checkbox" id="wf4-1"><label for="wf4-1">Import <code>04-openrouter-agent-chat.json</code>.</label></li>
       <li><input type="checkbox" id="wf4-2"><label for="wf4-2">Attach your OpenRouter credential to the HTTP Request node.</label></li>
-      <li><input type="checkbox" id="wf4-3"><label for="wf4-3">Click <b>Listen for Test Event</b> and send a real question (below).</label></li>
+      <li><input type="checkbox" id="wf4-3"><label for="wf4-3">Open the built-in <b>Chat</b> panel and send a real question.</label></li>
       <li><input type="checkbox" id="wf4-4"><label for="wf4-4">Read the raw API response in the HTTP Request node's output — find where <code>choices[0].message.content</code> lives.</label></li>
     </ul>
-    <pre class="code">curl -X POST https://&lt;your-n8n&gt;/webhook-test/fest-ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "How do I register for the fest?"}'</pre>
-    <div class="expect"><span class="k">Expected response</span><code>{ "answer": "..." }</code> — a real, model-generated answer.</div>
+    <div class="expect"><span class="k">Expected response</span>The chat reply shows the model-generated answer to your question.</div>
   </section>
 
   <section class="card" id="s6">
