@@ -1,0 +1,966 @@
+<title>n8n Handbook — Campus Tech Fest</title>
+<style>
+  :root {
+    --bg: #F3F5F7;
+    --surface: #FFFFFF;
+    --surface-2: #E7ECEF;
+    --ink: #12202E;
+    --ink-soft: #4A5A6A;
+    --ink-faint: #7C8B99;
+    --accent: #2F7A63;
+    --accent-soft: #E4F0EC;
+    --accent-2: #C97A33;
+    --accent-2-soft: #F5E7D6;
+    --line: #D9DFE4;
+    --code-bg: #0F1720;
+    --code-ink: #CFE8DD;
+    --shadow: 0 1px 2px rgba(18,32,46,0.06), 0 8px 24px rgba(18,32,46,0.06);
+  }
+  /* Deliberately light-theme only: this handbook is meant to be read/printed
+     as-is, so it does not follow the viewer's OS theme. */
+  html { color-scheme: light; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+  }
+  .mono { font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+  code { font-family: ui-monospace, monospace; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; color: var(--ink); font-size: 0.9em; }
+  a { color: var(--accent); }
+
+  h1, h2, h3, h4 {
+    font-family: ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 760px);
+    justify-content: center;
+    gap: 44px;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 36px 22px 140px;
+  }
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; }
+    nav.rail { position: static; order: 2; }
+  }
+
+  nav.rail { position: sticky; top: 32px; align-self: start; max-height: calc(100vh - 64px); overflow-y: auto; }
+  nav.rail .rail-title { font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); margin-bottom: 10px; }
+  nav.rail ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+  nav.rail a { display: block; padding: 6px 0 6px 14px; margin-left: -2px; border-left: 2px solid transparent; font-size: 0.85rem; color: var(--ink-soft); text-decoration: none; }
+  nav.rail a:hover { color: var(--accent); border-left-color: var(--line); }
+  nav.rail a.active { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+  nav.rail .n { font-family: ui-monospace, monospace; color: var(--ink-faint); margin-right: 6px; }
+  nav.rail .progress { margin-top: 16px; font-size: 0.76rem; color: var(--ink-faint); }
+  nav.rail .bar { height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+  nav.rail .bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.2s; }
+
+  header.doc-head { grid-column: 2; margin-bottom: 4px; }
+  header.doc-head .eyebrow { font-family: ui-monospace, monospace; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  header.doc-head h1 { font-size: clamp(1.6rem, 3.2vw, 2.15rem); line-height: 1.15; margin-bottom: 10px; }
+  header.doc-head p.lede { color: var(--ink-soft); max-width: 62ch; margin: 0 0 8px 0; }
+
+  main { grid-column: 2; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+  section.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px 28px; box-shadow: var(--shadow); scroll-margin-top: 20px; }
+
+  .badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .badge { font-family: ui-monospace, monospace; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 4px 12px; }
+  .badge.level-simple { }
+  .badge.level-basic { }
+  .badge.level-medium { color: var(--accent-2); background: var(--accent-2-soft); }
+  .badge.exercise { color: var(--accent-2); background: var(--accent-2-soft); }
+
+  section.card h2 { font-size: 1.3rem; margin-bottom: 6px; }
+  section.card p.goal { color: var(--ink-soft); margin: 0 0 18px 0; max-width: 62ch; }
+
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin: 0 0 20px 0; }
+  .node-chip { font-family: ui-monospace, monospace; font-size: 0.86rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 7px 13px; white-space: nowrap; }
+  .node-chip.trigger { border-color: var(--accent-2); color: var(--accent-2); }
+  .node-chip.action { border-color: var(--accent); color: var(--accent); }
+  .node-chip.data { border-color: #4472A8; color: #4472A8; }
+  .flow-arrow { color: var(--ink-faint); }
+
+  table.nodes { width: 100%; border-collapse: collapse; margin: 4px 0 20px 0; font-size: 0.88rem; display: block; overflow-x: auto; max-width: 100%; }
+  table.nodes th, table.nodes td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.nodes th { font-family: ui-monospace, monospace; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
+  table.nodes td:first-child { font-family: ui-monospace, monospace; color: var(--ink); white-space: nowrap; }
+  table.nodes td.type { color: var(--accent); font-family: ui-monospace, monospace; font-size: 0.82rem; white-space: nowrap; }
+
+  h3.section-h { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-faint); margin: 22px 0 10px 0; }
+  h3.section-h:first-of-type { margin-top: 4px; }
+
+  .checklist { list-style: none; margin: 0; padding: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent); flex: 0 0 auto; cursor: pointer; }
+  .checklist label { color: var(--ink); font-size: 0.94rem; cursor: pointer; }
+  .checklist label .sub { display: block; color: var(--ink-soft); font-size: 0.86rem; margin-top: 2px; }
+  .checklist input:checked + label { color: var(--ink-faint); text-decoration: line-through; }
+  .checklist input:checked + label .sub { color: var(--ink-faint); }
+
+  pre.code { background: var(--code-bg); color: var(--code-ink); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-family: ui-monospace, monospace; font-size: 0.82rem; line-height: 1.55; margin: 8px 0; }
+
+  .expect { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; margin: 8px 0; font-size: 0.86rem; color: var(--ink); }
+  .expect .k { font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); display: block; margin-bottom: 5px; }
+
+  .pitfall { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+  .pitfall:last-child { border-bottom: none; }
+  .pitfall .tag { flex: 0 0 auto; font-family: ui-monospace, monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--accent-2-soft); color: var(--accent-2); border-radius: 6px; padding: 3px 7px; height: fit-content; }
+  .pitfall p { margin: 0; color: var(--ink); }
+
+  .warn { display: flex; gap: 10px; align-items: flex-start; background: var(--accent-2-soft); border-radius: 10px; padding: 12px 14px; margin: 12px 0; font-size: 0.87rem; color: var(--ink); }
+  .warn b { color: var(--accent-2); }
+
+  table.cheat { width: 100%; border-collapse: collapse; margin: 4px 0; font-size: 0.85rem; display: block; overflow-x: auto; max-width: 100%; }
+  table.cheat th, table.cheat td { text-align: left; padding: 8px 9px; border-bottom: 1px solid var(--line); }
+  table.cheat th { font-family: ui-monospace, monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
+  table.cheat td:first-child { font-family: ui-monospace, monospace; color: var(--accent); white-space: nowrap; }
+  table.cheat td:nth-child(2) { color: var(--accent-2); font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: nowrap; }
+
+  ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+  ol.steps li { counter-increment: step; position: relative; padding: 6px 0 6px 34px; line-height: 1.6; }
+  ol.steps li::before { content: counter(step); position: absolute; left: 0; top: 5px; font-family: ui-monospace, monospace; font-size: 0.72rem; color: var(--accent); background: var(--accent-soft); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  ol.steps li code { white-space: normal; word-break: break-word; }
+
+  footer.doc-foot { grid-column: 2; color: var(--ink-faint); font-size: 0.8rem; margin-top: 8px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 900px) {
+    header.doc-head, main, footer.doc-foot { grid-column: 1; }
+  }
+
+  @media print {
+    nav.rail { display: none; }
+    .shell { grid-template-columns: 1fr; }
+    section.card { break-inside: avoid; box-shadow: none; }
+  }
+
+  details.wf-json { margin: 16px 0 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); overflow: hidden; }
+  details.wf-json summary { cursor: pointer; padding: 10px 14px; font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--accent); user-select: none; list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.wf-json summary::before { content: 'B8'; font-size: 0.7rem; transition: transform 0.15s; }
+  details.wf-json[open] summary::before { transform: rotate(90deg); }
+  details.wf-json summary::-webkit-details-marker { display: none; }
+  details.wf-json .copy-btn { margin: 0 14px; font-family: ui-monospace, monospace; font-size: 0.72rem; color: #fff; background: var(--accent); border: none; border-radius: 6px; padding: 6px 13px; cursor: pointer; }
+  details.wf-json .copy-btn:hover { opacity: 0.9; }
+  details.wf-json .copy-btn:active { transform: translateY(1px); }
+  details.wf-json pre.json-src { margin: 10px 14px 14px; max-height: 360px; overflow: auto; }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="Handbook navigation">
+    <div class="rail-title">Contents</div>
+    <ol id="railList">
+      <li><a href="#s0"><span class="n">00</span>Setup</a></li>
+      <li><a href="#sfiles"><span class="n">—</span>Workflow Files</a></li>
+      <li><a href="#s1"><span class="n">01</span>Foundations</a></li>
+      <li><a href="#s2"><span class="n">02</span>Workflow 1</a></li>
+      <li><a href="#s3"><span class="n">03</span>Workflow 2</a></li>
+      <li><a href="#s4"><span class="n">04</span>Workflow 3</a></li>
+      <li><a href="#s5"><span class="n">05</span>Workflow 4</a></li>
+      <li><a href="#s6"><span class="n">06</span>Workflow 5 · Your Turn</a></li>
+      <li><a href="#s7"><span class="n">07</span>Cheat Sheet</a></li>
+    </ol>
+    <div class="progress">
+      <span id="progressLabel">0 of 0 steps checked off</span>
+      <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
+    </div>
+  </nav>
+
+  <header class="doc-head">
+    <div class="eyebrow">Student handbook</div>
+    <h1>n8n — Campus Tech Fest Registration System</h1>
+    <p class="lede">Five workflows, one running story: from your first click to an AI agent that answers real student questions. Work through them in order — each one builds on the last. Check off steps as you go; your progress is saved in this browser.</p>
+  </header>
+
+  <main>
+
+  <section class="card" id="s0">
+    <div class="badge-row"><span class="badge">Before you begin</span></div>
+    <h2>Setup</h2>
+    <p class="goal">Everything below assumes you have your own n8n instance and the 5 workflow files.</p>
+    <ul class="checklist">
+      <li><input type="checkbox" id="setup-1"><label for="setup-1">n8n is open in your browser and you're logged in.</label></li>
+      <li><input type="checkbox" id="setup-2"><label for="setup-2">You have the workflow files from <code>D:\N8N-session\workflows\</code>.<span class="sub">Workflows 1–4 are ready-to-import — or copy their full JSON straight from the <a href="#sfiles">Workflow Files</a> section just below. Workflow 5 is a written task — see Section 06.</span></label></li>
+      <li><input type="checkbox" id="setup-3"><label for="setup-3">You have a free OpenRouter API key from <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a> (needed from Workflow 4 onward).<span class="sub">In n8n: <b>Credentials → New → Header Auth</b>. Name it <code>OpenRouter API Key</code>, header name <code>Authorization</code>, value <code>Bearer &lt;your key&gt;</code>.</span></label></li>
+      <li><input type="checkbox" id="setup-4"><label for="setup-4">You have a way to send test HTTP requests — a terminal (for <code>curl</code>) or Postman/Insomnia.</label></li>
+    </ul>
+    <h3 class="section-h">How to import a workflow</h3>
+    <ol class="steps">
+      <li>Open a blank workflow in n8n.</li>
+      <li>Click the <b>⋯</b> menu (top right, next to Publish).</li>
+      <li>Choose <b>Import from File</b> and select the <code>.json</code> file.</li>
+      <li>Click <b>Execute workflow</b> to test it manually, or <b>Listen for Test Event</b> if it starts with a Webhook.</li>
+    </ol>
+  </section>
+
+  <section class="card" id="sfiles">
+    <div class="badge-row"><span class="badge">Workflow Files</span></div>
+    <h2>Copy &amp; Paste the Workflows</h2>
+    <p class="goal">The complete JSON for Workflows 1–4 is right here — no separate files needed. Two ways to use each one:</p>
+    <ol class="steps">
+      <li><b>Paste onto canvas (easiest)</b> — click <b>Copy JSON</b>, open a workflow in n8n, click anywhere on the canvas, and press <code>Ctrl+V</code> (<code>Cmd+V</code> on Mac). The nodes appear instantly.</li>
+      <li><b>Save as a file</b> — paste into a text editor, save as <code>workflow.json</code>, then in n8n use <b>⋯ → Import from File</b>.</li>
+    </ol>
+    <div class="warn"><b>Heads up:</b> the OpenRouter node in Workflow 4 imports with no credential selected — open it and choose your <code>OpenRouter API Key</code> credential under Authentication before running.</div>
+    <details class="wf-json">
+      <summary>Workflow 1 — Manual Trigger Basics <span class="fn">01-manual-trigger-basics.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;01 - Manual Trigger Basics&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {},
+      &quot;id&quot;: &quot;a1000000-0000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;When clicking &#x27;Execute workflow&#x27;&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.manualTrigger&quot;,
+      &quot;typeVersion&quot;: 1,
+      &quot;position&quot;: [
+        260,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;name&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;Priya Sharma&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;branch&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;Computer Science&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s3&quot;,
+              &quot;name&quot;: &quot;year&quot;,
+              &quot;type&quot;: &quot;number&quot;,
+              &quot;value&quot;: 3
+            },
+            {
+              &quot;id&quot;: &quot;s4&quot;,
+              &quot;name&quot;: &quot;event&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;Campus Tech Fest&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a1000000-0000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Build Student Record&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        480,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {},
+      &quot;id&quot;: &quot;a1000000-0000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;View Final Data&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.noOp&quot;,
+      &quot;typeVersion&quot;: 1,
+      &quot;position&quot;: [
+        700,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;When clicking &#x27;Execute workflow&#x27;&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Build Student Record&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Build Student Record&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;View Final Data&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+    <details class="wf-json">
+      <summary>Workflow 2 — Webhook Registration <span class="fn">02-webhook-registration.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;02 - Webhook Registration&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;httpMethod&quot;: &quot;POST&quot;,
+        &quot;path&quot;: &quot;fest-register&quot;,
+        &quot;responseMode&quot;: &quot;responseNode&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;Webhook&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.webhook&quot;,
+      &quot;typeVersion&quot;: 2,
+      &quot;position&quot;: [
+        220,
+        300
+      ],
+      &quot;webhookId&quot;: &quot;fest-register-webhook&quot;
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;registrationId&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=TF-{{ $now.format(&#x27;yyyyMMdd&#x27;) }}-{{ Math.floor(Math.random() * 9000) + 1000 }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;registeredAt&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $now.toISO() }}&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Generate Registration ID&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        440,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s3&quot;,
+              &quot;name&quot;: &quot;confirmationMessage&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=Hi {{ $(&#x27;Webhook&#x27;).item.json.body.name }}, you&#x27;re registered for Campus Tech Fest! Your registration ID is {{ $json.registrationId }}.&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Build Confirmation&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        660,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;respondWith&quot;: &quot;json&quot;,
+        &quot;responseBody&quot;: &quot;={{ { \&quot;registrationId\&quot;: $(&#x27;Generate Registration ID&#x27;).item.json.registrationId, \&quot;message\&quot;: $json.confirmationMessage, \&quot;registeredAt\&quot;: $(&#x27;Generate Registration ID&#x27;).item.json.registeredAt } }}&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Respond to Webhook&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.respondToWebhook&quot;,
+      &quot;typeVersion&quot;: 1.1,
+      &quot;position&quot;: [
+        880,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;Webhook&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Generate Registration ID&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Generate Registration ID&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Build Confirmation&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Build Confirmation&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Respond to Webhook&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+    <details class="wf-json">
+      <summary>Workflow 3 — Schedule + API Reminder <span class="fn">03-schedule-api-reminder.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;03 - Schedule + API Reminder&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;rule&quot;: {
+          &quot;interval&quot;: [
+            {
+              &quot;field&quot;: &quot;days&quot;,
+              &quot;triggerAtHour&quot;: 9
+            }
+          ]
+        }
+      },
+      &quot;id&quot;: &quot;a3000000-0000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;Every Day at 9am&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.scheduleTrigger&quot;,
+      &quot;typeVersion&quot;: 1.2,
+      &quot;position&quot;: [
+        220,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;method&quot;: &quot;GET&quot;,
+        &quot;url&quot;: &quot;https://zenquotes.io/api/today&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a3000000-0000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Fetch Quote of the Day&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.httpRequest&quot;,
+      &quot;typeVersion&quot;: 4.2,
+      &quot;position&quot;: [
+        440,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;reminderMessage&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=Reminder: Campus Tech Fest is coming up! Today&#x27;s thought: \&quot;{{ $json.q }}\&quot; — {{ $json.a }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;sentAt&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $now.toISO() }}&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a3000000-0000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Compose Reminder&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        660,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {},
+      &quot;id&quot;: &quot;a3000000-0000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Ready to Send&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.noOp&quot;,
+      &quot;typeVersion&quot;: 1,
+      &quot;position&quot;: [
+        880,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;Every Day at 9am&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Fetch Quote of the Day&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Fetch Quote of the Day&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Compose Reminder&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Compose Reminder&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Ready to Send&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+    <details class="wf-json">
+      <summary>Workflow 4 — OpenRouter Agent (Webhook) <span class="fn">04-openrouter-agent-webhook.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;04 - OpenRouter Agent (Webhook)&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;httpMethod&quot;: &quot;POST&quot;,
+        &quot;path&quot;: &quot;fest-ask&quot;,
+        &quot;responseMode&quot;: &quot;responseNode&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;Webhook&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.webhook&quot;,
+      &quot;typeVersion&quot;: 2,
+      &quot;position&quot;: [
+        260,
+        300
+      ],
+      &quot;webhookId&quot;: &quot;fest-ask-webhook&quot;
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;method&quot;: &quot;POST&quot;,
+        &quot;url&quot;: &quot;https://openrouter.ai/api/v1/chat/completions&quot;,
+        &quot;authentication&quot;: &quot;predefinedCredentialType&quot;,
+        &quot;nodeCredentialType&quot;: &quot;httpHeaderAuth&quot;,
+        &quot;sendHeaders&quot;: true,
+        &quot;headerParameters&quot;: {
+          &quot;parameters&quot;: [
+            {
+              &quot;name&quot;: &quot;Content-Type&quot;,
+              &quot;value&quot;: &quot;application/json&quot;
+            }
+          ]
+        },
+        &quot;sendBody&quot;: true,
+        &quot;specifyBody&quot;: &quot;json&quot;,
+        &quot;jsonBody&quot;: &quot;={\n  \&quot;model\&quot;: \&quot;meta-llama/llama-3.1-8b-instruct:free\&quot;,\n  \&quot;messages\&quot;: [\n    {\n      \&quot;role\&quot;: \&quot;system\&quot;,\n      \&quot;content\&quot;: \&quot;You are a friendly assistant that answers student questions about Campus Tech Fest registration in 2-3 short sentences.\&quot;\n    },\n    {\n      \&quot;role\&quot;: \&quot;user\&quot;,\n      \&quot;content\&quot;: {{ JSON.stringify($json.body.question) }}\n    }\n  ]\n}&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Ask AI Agent (OpenRouter)&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.httpRequest&quot;,
+      &quot;typeVersion&quot;: 4.2,
+      &quot;position&quot;: [
+        480,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;answer&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $json.choices[0].message.content }}&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Extract Answer&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        700,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;respondWith&quot;: &quot;json&quot;,
+        &quot;responseBody&quot;: &quot;={\n  \&quot;answer\&quot;: {{ JSON.stringify($json.answer) }}\n}&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a4000000-1000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Respond to Webhook&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.respondToWebhook&quot;,
+      &quot;typeVersion&quot;: 1.1,
+      &quot;position&quot;: [
+        920,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;Webhook&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Ask AI Agent (OpenRouter)&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Ask AI Agent (OpenRouter)&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Extract Answer&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Extract Answer&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Respond to Webhook&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+  </section>
+
+
+  <section class="card" id="s1">
+    <div class="badge-row"><span class="badge">Foundations</span></div>
+    <h2>How n8n Thinks</h2>
+    <p class="goal">Three ideas carry the entire handbook. Everything else is just new nodes plugged into this same shape.</p>
+    <table class="nodes">
+      <tr><th>Term</th><th>Meaning</th></tr>
+      <tr><td>Trigger</td><td>What starts a workflow — a click, a webhook call, a schedule.</td></tr>
+      <tr><td>Node</td><td>One step — transform data, call an API, branch, respond.</td></tr>
+      <tr><td>Connection</td><td>The line between nodes. Data flows along it as JSON, left to right.</td></tr>
+    </table>
+    <h3 class="section-h">Expressions</h3>
+    <p class="goal" style="margin-bottom:10px;">Anything inside <code>{{ }}</code> is evaluated live using the current item's data.</p>
+    <pre class="code">{{ $json.fieldName }}              // a field on the current item
+{{ $json.body.name }}              // webhook payloads land under .body
+{{ $('Node Name').item.json.x }}   // reach back to an earlier node
+{{ $now.toISO() }}                 // current timestamp</pre>
+  </section>
+
+  <section class="card" id="s2">
+    <div class="badge-row"><span class="badge level-simple">Workflow 1 · Very Simple</span></div>
+    <h2>Manual Trigger Basics</h2>
+    <p class="goal">Click a button, watch a student record appear. No external system involved — this is purely to get comfortable with the canvas.</p>
+    <div class="flow">
+      <span class="node-chip trigger">Manual Trigger</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Set</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">No Operation</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>Manual Trigger</td><td class="type">Manual Trigger</td><td>No configuration — just the entry point.</td></tr>
+      <tr><td>Build Student Record</td><td class="type">Set</td><td><code>name</code>, <code>branch</code>, <code>year</code>, <code>event</code> — a static student record.</td></tr>
+      <tr><td>View Final Data</td><td class="type">No Operation</td><td>Does nothing — a place to stop and inspect the output.</td></tr>
+    </table>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf1-1"><label for="wf1-1">Import <code>01-manual-trigger-basics.json</code>.</label></li>
+      <li><input type="checkbox" id="wf1-2"><label for="wf1-2">Open the Set node — find the 4 fields it builds.</label></li>
+      <li><input type="checkbox" id="wf1-3"><label for="wf1-3">Click <b>Execute workflow</b> and open the output panel on No Operation.</label></li>
+      <li><input type="checkbox" id="wf1-4"><label for="wf1-4">Change one field's value and re-run — confirm the output changes.</label></li>
+    </ul>
+    <div class="expect"><span class="k">Expected output</span>a single item with <code>name</code>, <code>branch</code>, <code>year</code>, <code>event</code> fields set.</div>
+  </section>
+
+  <section class="card" id="s3">
+    <div class="badge-row"><span class="badge level-basic">Workflow 2 · Basic</span></div>
+    <h2>Webhook Registration</h2>
+    <p class="goal">A student POSTs their name to a URL; the workflow generates a registration ID, composes a message, and replies with JSON — all live, no polling.</p>
+    <div class="flow">
+      <span class="node-chip trigger">Webhook</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Generate ID</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Build Confirmation</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">Respond</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>Webhook</td><td class="type">Webhook</td><td>POST, path <code>fest-register</code>, Response Mode = <i>Using Respond to Webhook Node</i>.</td></tr>
+      <tr><td>Generate Registration ID</td><td class="type">Set</td><td><code>registrationId</code> built from today's date + a random number.</td></tr>
+      <tr><td>Build Confirmation</td><td class="type">Set</td><td><code>confirmationMessage</code> — reaches back to the Webhook node's data with <code>$('Webhook').item.json.body.name</code>.</td></tr>
+      <tr><td>Respond to Webhook</td><td class="type">Respond to Webhook</td><td>Returns <code>{ registrationId, message, registeredAt }</code>.</td></tr>
+    </table>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf2-1"><label for="wf2-1">Import <code>02-webhook-registration.json</code>.</label></li>
+      <li><input type="checkbox" id="wf2-2"><label for="wf2-2">Click <b>Listen for Test Event</b> on the Webhook node.</label></li>
+      <li><input type="checkbox" id="wf2-3"><label for="wf2-3">Send a test request (below) and confirm you get a JSON response back.</label></li>
+      <li><input type="checkbox" id="wf2-4"><label for="wf2-4">Open each node's output panel and trace how <code>name</code> becomes <code>confirmationMessage</code>.</label></li>
+    </ul>
+    <pre class="code">curl -X POST https://&lt;your-n8n&gt;/webhook-test/fest-register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Asha"}'</pre>
+    <div class="expect"><span class="k">Expected response</span><code>{ "registrationId": "TF-...", "message": "Hi Asha, you're registered...", "registeredAt": "..." }</code></div>
+    <h3 class="section-h">Common pitfalls</h3>
+    <div class="pitfall"><span class="tag">Data path</span><p>Forgetting <code>.body</code> — it's <code>$json.body.name</code>, not <code>$json.name</code>.</p></div>
+    <div class="pitfall"><span class="tag">Config</span><p>Response Mode not set to "Using Respond to Webhook Node" — the last node won't be able to control the reply.</p></div>
+    <div class="pitfall"><span class="tag">URL</span><p>Confusing the Test URL (only live while listening) with the Production URL.</p></div>
+  </section>
+
+  <section class="card" id="s4">
+    <div class="badge-row"><span class="badge level-basic">Workflow 3 · Basic</span></div>
+    <h2>Schedule + API Reminder</h2>
+    <p class="goal">Runs on its own, every day at 9am — nobody clicks anything. Calls a public API for content and composes a reminder message.</p>
+    <div class="flow">
+      <span class="node-chip trigger">Schedule</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">HTTP Request</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Set</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">No Op</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>Every Day at 9am</td><td class="type">Schedule Trigger</td><td>Interval: daily, trigger at hour 9.</td></tr>
+      <tr><td>Fetch Quote of the Day</td><td class="type">HTTP Request</td><td>GET <code>https://zenquotes.io/api/today</code>.</td></tr>
+      <tr><td>Compose Reminder</td><td class="type">Set</td><td><code>reminderMessage</code> built from <code>{{ $json.q }}</code> and <code>{{ $json.a }}</code>.</td></tr>
+      <tr><td>Ready to Send</td><td class="type">No Operation</td><td>Stops here — a real deployment would send this via email/Slack.</td></tr>
+    </table>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf3-1"><label for="wf3-1">Import <code>03-schedule-api-reminder.json</code>.</label></li>
+      <li><input type="checkbox" id="wf3-2"><label for="wf3-2">Since the schedule won't fire on demand, click <b>Execute workflow</b> to test manually.</label></li>
+      <li><input type="checkbox" id="wf3-3"><label for="wf3-3">Open the HTTP Request node's output — find the raw quote JSON.</label></li>
+      <li><input type="checkbox" id="wf3-4"><label for="wf3-4">Open the Set node's output — confirm the composed message.</label></li>
+    </ul>
+    <div class="expect"><span class="k">Expected output</span><code>reminderMessage</code>: "Reminder: Campus Tech Fest is coming up! Today's thought: ... "</div>
+  </section>
+
+  <section class="card" id="s5">
+    <div class="badge-row"><span class="badge level-medium">Workflow 4 · Basic-Medium</span></div>
+    <h2>A Small AI Agent Behind a Webhook</h2>
+    <p class="goal">A student POSTs a question about the fest; n8n forwards it to a real language model through OpenRouter and replies with the answer.</p>
+    <div class="flow">
+      <span class="node-chip trigger">Webhook</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">Ask AI Agent (OpenRouter)</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Extract Answer</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">Respond</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>Webhook</td><td class="type">Webhook</td><td>POST, path <code>fest-ask</code>. Body: <code>{ "question": "..." }</code>.</td></tr>
+      <tr><td>Ask AI Agent (OpenRouter)</td><td class="type">HTTP Request</td><td>POST <code>https://openrouter.ai/api/v1/chat/completions</code>, Header Auth credential, JSON body with model + system/user messages.</td></tr>
+      <tr><td>Extract Answer</td><td class="type">Set</td><td><code>answer</code> = <code>{{ $json.choices[0].message.content }}</code>.</td></tr>
+      <tr><td>Respond to Webhook</td><td class="type">Respond to Webhook</td><td>Returns <code>{ "answer": "..." }</code>.</td></tr>
+    </table>
+    <div class="warn"><b>Before running this one:</b> the node imports with no credential selected — open "Ask AI Agent (OpenRouter)", and under Authentication choose your OpenRouter Header Auth credential (see Section 00) before running.</div>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf4-1"><label for="wf4-1">Import <code>04-openrouter-agent-webhook.json</code>.</label></li>
+      <li><input type="checkbox" id="wf4-2"><label for="wf4-2">Attach your OpenRouter credential to the HTTP Request node.</label></li>
+      <li><input type="checkbox" id="wf4-3"><label for="wf4-3">Click <b>Listen for Test Event</b> and send a real question (below).</label></li>
+      <li><input type="checkbox" id="wf4-4"><label for="wf4-4">Read the raw API response in the HTTP Request node's output — find where <code>choices[0].message.content</code> lives.</label></li>
+    </ul>
+    <pre class="code">curl -X POST https://&lt;your-n8n&gt;/webhook-test/fest-ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "How do I register for the fest?"}'</pre>
+    <div class="expect"><span class="k">Expected response</span><code>{ "answer": "..." }</code> — a real, model-generated answer.</div>
+  </section>
+
+  <section class="card" id="s6">
+    <div class="badge-row"><span class="badge exercise">Workflow 5 · Your Turn — no starter file provided</span></div>
+    <h2>The Personalized Fest Assistant</h2>
+    <p class="goal">No starter file this time — build it from a blank canvas. But look closely: every node type here is one you've already used in Workflows 1–4. This is really a test of whether those four stuck, not a fifth new concept.</p>
+    <h3 class="section-h">Requirements</h3>
+    <ol class="steps">
+      <li><b>Trigger</b> — a webhook (POST), expecting <code>{ "name": "...", "branch": "...", "year": N, "question": "..." }</code>.</li>
+      <li><b>Build a student profile</b> — a Set node shaping the incoming fields into a clean record (exactly what Workflow 1's Set node did, just with real input).</li>
+      <li><b>Personalize the AI call</b> — same OpenRouter endpoint and credential as Workflow 4, but the system prompt is built <i>dynamically</i> from the profile's name/branch/year.</li>
+      <li><b>Extract and respond</b> — return <code>{ "greeting": "Hi Priya!", "answer": "..." }</code>.</li>
+    </ol>
+    <h3 class="section-h">Where to look</h3>
+    <p style="margin: 0 0 10px 0; color: var(--ink-soft); font-size: 0.92rem;">Four ideas, all recombined from Workflows 1–4 — no new node types:</p>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf5-hint1"><label for="wf5-hint1"><b>Set</b> (Workflow 1) — to shape the incoming webhook data into a profile before using it.</label></li>
+      <li><input type="checkbox" id="wf5-hint2"><label for="wf5-hint2"><b>Webhook + Respond to Webhook</b> (Workflow 2) — same trigger/response shape.</label></li>
+      <li><input type="checkbox" id="wf5-hint3"><label for="wf5-hint3"><b>HTTP Request calling OpenRouter</b> (Workflow 4) — reuse your existing "OpenRouter API Key" credential.</label></li>
+      <li><input type="checkbox" id="wf5-hint4"><label for="wf5-hint4">Build the system prompt with string concatenation: <code>"...for a " + $json.year + "-year " + $json.branch + "..."</code> — just an expression, same <code>{{ }}</code> syntax as everywhere else.</label></li>
+    </ul>
+    <h3 class="section-h">How to check your work</h3>
+    <p style="margin: 0 0 8px 0; color: var(--ink-soft); font-size: 0.92rem;">Send a test request, then send a second one changing only <code>branch</code> or <code>year</code>. Confirm the AI's answer actually shifts tone — that's proof the personalization is really wired through, not just decoration on the response.</p>
+    <div class="warn"><b>Stretch goal:</b> add a default value for any missing field (e.g. if <code>branch</code> isn't provided, fall back to "a student") using an expression instead of requiring every field.</div>
+  </section>
+
+  <section class="card" id="s7">
+    <div class="badge-row"><span class="badge">Reference</span></div>
+    <h2>Feature Cheat Sheet</h2>
+    <table class="cheat">
+      <tr><th>Feature</th><th>Node</th><th>First appears</th></tr>
+      <tr><td>Manual start</td><td class="mono">Manual Trigger</td><td>Workflow 1</td></tr>
+      <tr><td>Transform data</td><td class="mono">Set (Edit Fields)</td><td>Workflow 1</td></tr>
+      <tr><td>Inert stop / inspect</td><td class="mono">No Operation</td><td>Workflow 1</td></tr>
+      <tr><td>Receive HTTP requests</td><td class="mono">Webhook</td><td>Workflow 2</td></tr>
+      <tr><td>Reply to a caller</td><td class="mono">Respond to Webhook</td><td>Workflow 2</td></tr>
+      <tr><td>Run on a timer</td><td class="mono">Schedule Trigger</td><td>Workflow 3</td></tr>
+      <tr><td>Call an external API</td><td class="mono">HTTP Request</td><td>Workflow 3</td></tr>
+      <tr><td>Call an LLM (any provider)</td><td class="mono">HTTP Request + OpenRouter</td><td>Workflow 4</td></tr>
+      <tr><td>Keep secrets out of nodes</td><td class="mono">Header Auth credential</td><td>Workflow 4</td></tr>
+      <tr><td>Dynamic prompts from data</td><td class="mono">Expressions in an HTTP body</td><td>Workflow 5</td></tr>
+      <tr><td>Reaching back multiple hops</td><td class="mono"><code>$('Node Name')</code></td><td>Workflow 5</td></tr>
+    </table>
+  </section>
+
+  </main>
+
+  <footer class="doc-foot">
+    Companion to the presenter deck and slide deck in <code>D:\N8N-session\</code>. Your progress checkboxes are saved locally in this browser only.
+  </footer>
+</div>
+
+<script>
+  // Sidebar active-section highlighting
+  const links = Array.from(document.querySelectorAll('nav.rail a'));
+  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = sections.indexOf(entry.target);
+      if (idx === -1) return;
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        links[idx].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  sections.forEach(s => { if (s) observer.observe(s); });
+
+  // Checklist persistence + progress bar
+  const STORAGE_KEY = 'n8n-handbook-progress';
+  const boxes = Array.from(document.querySelectorAll('.checklist input[type="checkbox"]'));
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { saved = {}; }
+  boxes.forEach(b => { if (saved[b.id]) b.checked = true; });
+
+  function updateProgress() {
+    const total = boxes.length;
+    const done = boxes.filter(b => b.checked).length;
+    document.getElementById('progressLabel').textContent = done + ' of ' + total + ' steps checked off';
+    document.getElementById('progressBar').style.width = (total ? (done / total * 100) : 0) + '%';
+  }
+  boxes.forEach(b => {
+    b.addEventListener('change', () => {
+      saved[b.id] = b.checked;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  // Copy-to-clipboard for embedded workflow JSON
+  document.querySelectorAll('.wf-json .copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pre = btn.parentElement.querySelector('pre.json-src');
+      const text = pre.textContent;
+      const done = () => { const o = btn.textContent; btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = o; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+  function fallbackCopy(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+</script>
