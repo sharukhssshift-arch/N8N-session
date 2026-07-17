@@ -168,7 +168,10 @@
       <li><a href="#s4"><span class="n">04</span>Workflow 3</a></li>
       <li><a href="#s5"><span class="n">05</span>Workflow 4</a></li>
       <li><a href="#s6"><span class="n">06</span>Workflow 5 · Your Turn</a></li>
-      <li><a href="#s7"><span class="n">07</span>Cheat Sheet</a></li>
+      <li><a href="#s7"><span class="n">07</span>Workflow 6 · Sheets Agent</a></li>
+      <li><a href="#s8"><span class="n">08</span>Workflow 7 · News Digest</a></li>
+      <li><a href="#s9"><span class="n">09</span>Workflow 8 · Registration Guard</a></li>
+      <li><a href="#s10"><span class="n">10</span>Cheat Sheet</a></li>
     </ol>
     <div class="progress">
       <span id="progressLabel">0 of 0 steps checked off</span>
@@ -179,7 +182,7 @@
   <header class="doc-head">
     <div class="eyebrow">Student handbook</div>
     <h1>n8n — Campus Tech Fest Registration System</h1>
-    <p class="lede">Five workflows, one running story: from your first click to an AI agent that answers real student questions. Work through them in order — each one builds on the last. Check off steps as you go; your progress is saved in this browser.</p>
+    <p class="lede">Eight workflows, one running story: from your first click to an AI agent that answers real student questions, logs feedback to a spreadsheet, pulls in live news, and guards against duplicate signups. Work through them in order — each one builds on the last. Check off steps as you go; your progress is saved in this browser.</p>
   </header>
 
   <main>
@@ -187,31 +190,32 @@
   <section class="card" id="s0">
     <div class="badge-row"><span class="badge">Before you begin</span></div>
     <h2>Setup</h2>
-    <p class="goal">Everything below assumes you have your own n8n instance and the 5 workflow files.</p>
+    <p class="goal">Everything below assumes you have your own n8n instance and the 8 workflow files.</p>
     <ul class="checklist">
       <li><input type="checkbox" id="setup-1"><label for="setup-1">n8n is open in your browser and you're logged in.</label></li>
-      <li><input type="checkbox" id="setup-2"><label for="setup-2">You have the workflow files from <code>D:\N8N-session\workflows\</code>.<span class="sub">Workflows 1–4 are ready-to-import — or copy their full JSON straight from the <a href="#sfiles">Workflow Files</a> section just below. Workflow 5 is a written task — see Section 06.</span></label></li>
-      <li><input type="checkbox" id="setup-3"><label for="setup-3">You have a free OpenRouter API key from <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a> (needed from Workflow 4 onward).<span class="sub">In n8n: <b>Credentials → New → Header Auth</b>. Name it <code>OpenRouter API Key</code>, header name <code>Authorization</code>, value <code>Bearer &lt;your key&gt;</code>.</span></label></li>
-      <li><input type="checkbox" id="setup-4"><label for="setup-4">You have a way to send test HTTP requests — a terminal (for <code>curl</code>) or Postman/Insomnia.</label></li>
+      <li><input type="checkbox" id="setup-2"><label for="setup-2">You have the workflow files from <code>D:\N8N-session\workflows\</code>.<span class="sub">Workflows 1–4 and 6–8 are ready-to-import — or copy their full JSON straight from the <a href="#sfiles">Workflow Files</a> section just below. Workflow 5 is a written task — see Section 06.</span></label></li>
+      <li><input type="checkbox" id="setup-3"><label for="setup-3">You have a free OpenRouter API key from <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a> (needed from Workflow 4 onward).<span class="sub">In n8n: <b>Credentials → New → OpenRouter</b>. Paste your API key in.</span></label></li>
+      <li><input type="checkbox" id="setup-5"><label for="setup-5">You have a Google Sheets OAuth2 credential connected in n8n, and a spreadsheet ready with <code>Feedback</code> and <code>Registrations</code> sheets/tabs (needed for Workflows 6 and 8).<span class="sub">In n8n: <b>Credentials → New → Google Sheets Account</b>, sign in, and grant access. Then create the two sheet tabs with header rows matching the columns used below.</span></label></li>
+      <li><input type="checkbox" id="setup-6"><label for="setup-6">Optional — a terminal (for <code>curl</code>) or Postman/Insomnia, only useful for the stretch goals. Every workflow below is tested by just typing into n8n's built-in chat panel.</label></li>
     </ul>
     <h3 class="section-h">How to import a workflow</h3>
     <ol class="steps">
       <li>Open a blank workflow in n8n.</li>
       <li>Click the <b>⋯</b> menu (top right, next to Publish).</li>
       <li>Choose <b>Import from File</b> and select the <code>.json</code> file.</li>
-      <li>Click <b>Execute workflow</b> to test it manually, or <b>Listen for Test Event</b> if it starts with a Webhook.</li>
+      <li>Click <b>Execute workflow</b> to test it manually, or <b>Open Chat</b> if it starts with a Chat Trigger.</li>
     </ol>
   </section>
 
   <section class="card" id="sfiles">
     <div class="badge-row"><span class="badge">Workflow Files</span></div>
     <h2>Copy &amp; Paste the Workflows</h2>
-    <p class="goal">The complete JSON for Workflows 1–4 is right here — no separate files needed. Two ways to use each one:</p>
+    <p class="goal">The complete JSON for Workflows 1–4, 6, 7, and 8 is right here — no separate files needed. Two ways to use each one:</p>
     <ol class="steps">
       <li><b>Paste onto canvas (easiest)</b> — click <b>Copy JSON</b>, open a workflow in n8n, click anywhere on the canvas, and press <code>Ctrl+V</code> (<code>Cmd+V</code> on Mac). The nodes appear instantly.</li>
       <li><b>Save as a file</b> — paste into a text editor, save as <code>workflow.json</code>, then in n8n use <b>⋯ → Import from File</b>.</li>
     </ol>
-    <div class="warn"><b>Heads up:</b> the OpenRouter node in Workflow 4 imports with no credential selected — open it and choose your <code>OpenRouter API Key</code> credential under Authentication before running.</div>
+    <div class="warn"><b>Heads up:</b> the OpenRouter node in Workflow 4 imports with no credential selected — open it and choose your <code>OpenRouter API Key</code> credential under Authentication before running. The Google Sheets nodes in Workflows 6 and 8 also import without a credential, and their <code>documentId</code> is a placeholder — swap in your own spreadsheet's ID (from its URL) before running.</div>
     <details class="wf-json">
       <summary>Workflow 1 — Manual Trigger Basics <span class="fn">01-manual-trigger-basics.json</span></summary>
       <button class="copy-btn" type="button">Copy JSON</button>
@@ -317,27 +321,24 @@
 </pre>
     </details>
     <details class="wf-json">
-      <summary>Workflow 2 — Webhook Registration <span class="fn">02-webhook-registration.json</span></summary>
+      <summary>Workflow 2 — Chat Registration <span class="fn">02-chat-registration.json</span></summary>
       <button class="copy-btn" type="button">Copy JSON</button>
       <pre class="code json-src">{
-  &quot;name&quot;: &quot;02 - Webhook Registration&quot;,
+  &quot;name&quot;: &quot;02 - Chat Registration&quot;,
   &quot;nodes&quot;: [
     {
       &quot;parameters&quot;: {
-        &quot;httpMethod&quot;: &quot;POST&quot;,
-        &quot;path&quot;: &quot;fest-register&quot;,
-        &quot;responseMode&quot;: &quot;responseNode&quot;,
         &quot;options&quot;: {}
       },
       &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000001&quot;,
-      &quot;name&quot;: &quot;Webhook&quot;,
-      &quot;type&quot;: &quot;n8n-nodes-base.webhook&quot;,
-      &quot;typeVersion&quot;: 2,
+      &quot;name&quot;: &quot;When chat message received&quot;,
+      &quot;type&quot;: &quot;@n8n/n8n-nodes-langchain.chatTrigger&quot;,
+      &quot;typeVersion&quot;: 1.1,
       &quot;position&quot;: [
         220,
         300
       ],
-      &quot;webhookId&quot;: &quot;fest-register-webhook&quot;
+      &quot;webhookId&quot;: &quot;fest-register-chat&quot;
     },
     {
       &quot;parameters&quot;: {
@@ -378,9 +379,9 @@
           &quot;assignments&quot;: [
             {
               &quot;id&quot;: &quot;s3&quot;,
-              &quot;name&quot;: &quot;confirmationMessage&quot;,
+              &quot;name&quot;: &quot;output&quot;,
               &quot;type&quot;: &quot;string&quot;,
-              &quot;value&quot;: &quot;=Hi {{ $(&#x27;Webhook&#x27;).item.json.body.name }}, you&#x27;re registered for Campus Tech Fest! Your registration ID is {{ $json.registrationId }}.&quot;
+              &quot;value&quot;: &quot;=Hi {{ $(&#x27;When chat message received&#x27;).item.json.chatInput }}, you&#x27;re registered for Campus Tech Fest! Your registration ID is {{ $json.registrationId }}.&quot;
             }
           ]
         },
@@ -394,25 +395,10 @@
         660,
         300
       ]
-    },
-    {
-      &quot;parameters&quot;: {
-        &quot;respondWith&quot;: &quot;json&quot;,
-        &quot;responseBody&quot;: &quot;={{ { \&quot;registrationId\&quot;: $(&#x27;Generate Registration ID&#x27;).item.json.registrationId, \&quot;message\&quot;: $json.confirmationMessage, \&quot;registeredAt\&quot;: $(&#x27;Generate Registration ID&#x27;).item.json.registeredAt } }}&quot;,
-        &quot;options&quot;: {}
-      },
-      &quot;id&quot;: &quot;a2000000-0000-4000-8000-000000000004&quot;,
-      &quot;name&quot;: &quot;Respond to Webhook&quot;,
-      &quot;type&quot;: &quot;n8n-nodes-base.respondToWebhook&quot;,
-      &quot;typeVersion&quot;: 1.1,
-      &quot;position&quot;: [
-        880,
-        300
-      ]
     }
   ],
   &quot;connections&quot;: {
-    &quot;Webhook&quot;: {
+    &quot;When chat message received&quot;: {
       &quot;main&quot;: [
         [
           {
@@ -428,17 +414,6 @@
         [
           {
             &quot;node&quot;: &quot;Build Confirmation&quot;,
-            &quot;type&quot;: &quot;main&quot;,
-            &quot;index&quot;: 0
-          }
-        ]
-      ]
-    },
-    &quot;Build Confirmation&quot;: {
-      &quot;main&quot;: [
-        [
-          {
-            &quot;node&quot;: &quot;Respond to Webhook&quot;,
             &quot;type&quot;: &quot;main&quot;,
             &quot;index&quot;: 0
           }
@@ -695,6 +670,587 @@
 }
 </pre>
     </details>
+    <details class="wf-json">
+      <summary>Workflow 6 — AI Feedback Logger (Chat + Google Sheets) <span class="fn">06-feedback-logger-sheets.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;06 - AI Feedback Logger (Sheets)&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;When chat message received&quot;,
+      &quot;type&quot;: &quot;@n8n/n8n-nodes-langchain.chatTrigger&quot;,
+      &quot;typeVersion&quot;: 1.1,
+      &quot;position&quot;: [
+        220,
+        300
+      ],
+      &quot;webhookId&quot;: &quot;fest-feedback-chat&quot;
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;method&quot;: &quot;POST&quot;,
+        &quot;url&quot;: &quot;https://openrouter.ai/api/v1/chat/completions&quot;,
+        &quot;authentication&quot;: &quot;predefinedCredentialType&quot;,
+        &quot;nodeCredentialType&quot;: &quot;openRouterApi&quot;,
+        &quot;sendHeaders&quot;: true,
+        &quot;headerParameters&quot;: {
+          &quot;parameters&quot;: [
+            {
+              &quot;name&quot;: &quot;Content-Type&quot;,
+              &quot;value&quot;: &quot;application/json&quot;
+            }
+          ]
+        },
+        &quot;sendBody&quot;: true,
+        &quot;specifyBody&quot;: &quot;json&quot;,
+        &quot;jsonBody&quot;: &quot;={\n  \&quot;model\&quot;: \&quot;google/gemini-2.0-flash-001\&quot;,\n  \&quot;messages\&quot;: [\n    {\n      \&quot;role\&quot;: \&quot;system\&quot;,\n      \&quot;content\&quot;: \&quot;Classify the sentiment of this student feedback as exactly one word: Positive, Neutral, or Negative. Reply with only that word.\&quot;\n    },\n    {\n      \&quot;role\&quot;: \&quot;user\&quot;,\n      \&quot;content\&quot;: {{ JSON.stringify($json.chatInput) }}\n    }\n  ]\n}&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Classify Sentiment (OpenRouter)&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.httpRequest&quot;,
+      &quot;typeVersion&quot;: 4.2,
+      &quot;position&quot;: [
+        440,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;feedback&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $(&#x27;When chat message received&#x27;).item.json.chatInput }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;sentiment&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $json.choices[0].message.content.trim() }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s3&quot;,
+              &quot;name&quot;: &quot;submittedAt&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $now.toISO() }}&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Build Sheet Row&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        660,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;operation&quot;: &quot;append&quot;,
+        &quot;documentId&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;YOUR_GOOGLE_SHEET_ID&quot;
+        },
+        &quot;sheetName&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;Feedback&quot;
+        },
+        &quot;columns&quot;: {
+          &quot;mappingMode&quot;: &quot;autoMapInputData&quot;,
+          &quot;value&quot;: {},
+          &quot;matchingColumns&quot;: [],
+          &quot;schema&quot;: []
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Log to Sheet&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.googleSheets&quot;,
+      &quot;typeVersion&quot;: 4.5,
+      &quot;position&quot;: [
+        880,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s4&quot;,
+              &quot;name&quot;: &quot;output&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=Thanks for your feedback! I sensed a {{ $json.sentiment }} tone — noted for the organizers.&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000005&quot;,
+      &quot;name&quot;: &quot;Build Reply&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        1100,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;When chat message received&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Classify Sentiment (OpenRouter)&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Classify Sentiment (OpenRouter)&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Build Sheet Row&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Build Sheet Row&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Log to Sheet&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Log to Sheet&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Build Reply&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+    <details class="wf-json">
+      <summary>Workflow 7 — Daily Tech News Digest <span class="fn">07-daily-news-digest.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;07 - Daily Tech News Digest&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;rule&quot;: {
+          &quot;interval&quot;: [
+            {
+              &quot;field&quot;: &quot;days&quot;,
+              &quot;triggerAtHour&quot;: 8
+            }
+          ]
+        }
+      },
+      &quot;id&quot;: &quot;a7000000-0000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;Every Morning at 8am&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.scheduleTrigger&quot;,
+      &quot;typeVersion&quot;: 1.2,
+      &quot;position&quot;: [
+        220,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;method&quot;: &quot;GET&quot;,
+        &quot;url&quot;: &quot;https://saurav.tech/NewsAPI/top-headlines/category/technology/us.json&quot;,
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a7000000-0000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Fetch Top Tech News&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.httpRequest&quot;,
+      &quot;typeVersion&quot;: 4.2,
+      &quot;position&quot;: [
+        440,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;headline1&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $json.articles[0].title }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;headline2&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $json.articles[1].title }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s3&quot;,
+              &quot;name&quot;: &quot;headline3&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $json.articles[2].title }}&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s4&quot;,
+              &quot;name&quot;: &quot;digestText&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=Tech Fest Daily Digest — {{ $now.toFormat(&#x27;DDDD&#x27;) }}\n1. {{ $json.articles[0].title }} ({{ $json.articles[0].url }})\n2. {{ $json.articles[1].title }} ({{ $json.articles[1].url }})\n3. {{ $json.articles[2].title }} ({{ $json.articles[2].url }})&quot;
+            },
+            {
+              &quot;id&quot;: &quot;s5&quot;,
+              &quot;name&quot;: &quot;generatedAt&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;={{ $now.toISO() }}&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;a7000000-0000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Build Digest&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        660,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {},
+      &quot;id&quot;: &quot;a7000000-0000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Digest Ready&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.noOp&quot;,
+      &quot;typeVersion&quot;: 1,
+      &quot;position&quot;: [
+        880,
+        300
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;Every Morning at 8am&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Fetch Top Tech News&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Fetch Top Tech News&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Build Digest&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Build Digest&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Digest Ready&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
+    <details class="wf-json">
+      <summary>Workflow 8 — Duplicate Registration Guard <span class="fn">08-registration-guard.json</span></summary>
+      <button class="copy-btn" type="button">Copy JSON</button>
+      <pre class="code json-src">{
+  &quot;name&quot;: &quot;08 - Duplicate Registration Guard&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;parameters&quot;: {
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000001&quot;,
+      &quot;name&quot;: &quot;When chat message received&quot;,
+      &quot;type&quot;: &quot;@n8n/n8n-nodes-langchain.chatTrigger&quot;,
+      &quot;typeVersion&quot;: 1.1,
+      &quot;position&quot;: [
+        160,
+        300
+      ],
+      &quot;webhookId&quot;: &quot;fest-register-guard-chat&quot;
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;operation&quot;: &quot;read&quot;,
+        &quot;documentId&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;YOUR_GOOGLE_SHEET_ID&quot;
+        },
+        &quot;sheetName&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;Registrations&quot;
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000002&quot;,
+      &quot;name&quot;: &quot;Read All Registrations&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.googleSheets&quot;,
+      &quot;typeVersion&quot;: 4.5,
+      &quot;position&quot;: [
+        380,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;jsCode&quot;: &quot;const email = $(&#x27;When chat message received&#x27;).item.json.chatInput.trim();\nconst existing = $input.all().some(item => item.json.email === email);\nreturn [{ json: { email, alreadyRegistered: existing } }];&quot;
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000003&quot;,
+      &quot;name&quot;: &quot;Check Duplicate&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.code&quot;,
+      &quot;typeVersion&quot;: 2,
+      &quot;position&quot;: [
+        600,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;conditions&quot;: {
+          &quot;options&quot;: {
+            &quot;caseSensitive&quot;: true,
+            &quot;leftValue&quot;: &quot;&quot;,
+            &quot;typeValidation&quot;: &quot;strict&quot;
+          },
+          &quot;conditions&quot;: [
+            {
+              &quot;id&quot;: &quot;c1&quot;,
+              &quot;leftValue&quot;: &quot;={{ $json.alreadyRegistered }}&quot;,
+              &quot;rightValue&quot;: true,
+              &quot;operator&quot;: {
+                &quot;type&quot;: &quot;boolean&quot;,
+                &quot;operation&quot;: &quot;true&quot;,
+                &quot;singleValue&quot;: true
+              }
+            }
+          ],
+          &quot;combinator&quot;: &quot;and&quot;
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000004&quot;,
+      &quot;name&quot;: &quot;Already Registered?&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.if&quot;,
+      &quot;typeVersion&quot;: 2,
+      &quot;position&quot;: [
+        820,
+        300
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s1&quot;,
+              &quot;name&quot;: &quot;output&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=This email is already registered for the fest.&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000005&quot;,
+      &quot;name&quot;: &quot;Reply Duplicate&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        1040,
+        200
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;operation&quot;: &quot;append&quot;,
+        &quot;documentId&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;YOUR_GOOGLE_SHEET_ID&quot;
+        },
+        &quot;sheetName&quot;: {
+          &quot;mode&quot;: &quot;list&quot;,
+          &quot;value&quot;: &quot;Registrations&quot;
+        },
+        &quot;columns&quot;: {
+          &quot;mappingMode&quot;: &quot;defineBelow&quot;,
+          &quot;value&quot;: {
+            &quot;email&quot;: &quot;={{ $json.email }}&quot;,
+            &quot;registeredAt&quot;: &quot;={{ $now.toISO() }}&quot;
+          },
+          &quot;matchingColumns&quot;: [],
+          &quot;schema&quot;: []
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000006&quot;,
+      &quot;name&quot;: &quot;Append Registration&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.googleSheets&quot;,
+      &quot;typeVersion&quot;: 4.5,
+      &quot;position&quot;: [
+        1040,
+        400
+      ]
+    },
+    {
+      &quot;parameters&quot;: {
+        &quot;mode&quot;: &quot;manual&quot;,
+        &quot;duplicateItem&quot;: false,
+        &quot;assignments&quot;: {
+          &quot;assignments&quot;: [
+            {
+              &quot;id&quot;: &quot;s2&quot;,
+              &quot;name&quot;: &quot;output&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;value&quot;: &quot;=You&#x27;re registered for Campus Tech Fest! We&#x27;ll email {{ $json.email }} with updates.&quot;
+            }
+          ]
+        },
+        &quot;options&quot;: {}
+      },
+      &quot;id&quot;: &quot;c8000000-1000-4000-8000-000000000007&quot;,
+      &quot;name&quot;: &quot;Reply Success&quot;,
+      &quot;type&quot;: &quot;n8n-nodes-base.set&quot;,
+      &quot;typeVersion&quot;: 3.4,
+      &quot;position&quot;: [
+        1260,
+        400
+      ]
+    }
+  ],
+  &quot;connections&quot;: {
+    &quot;When chat message received&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Read All Registrations&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Read All Registrations&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Check Duplicate&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Check Duplicate&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Already Registered?&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Already Registered?&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Reply Duplicate&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ],
+        [
+          {
+            &quot;node&quot;: &quot;Append Registration&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    },
+    &quot;Append Registration&quot;: {
+      &quot;main&quot;: [
+        [
+          {
+            &quot;node&quot;: &quot;Reply Success&quot;,
+            &quot;type&quot;: &quot;main&quot;,
+            &quot;index&quot;: 0
+          }
+        ]
+      ]
+    }
+  },
+  &quot;active&quot;: false,
+  &quot;settings&quot;: {
+    &quot;executionOrder&quot;: &quot;v1&quot;
+  },
+  &quot;pinData&quot;: {}
+}
+</pre>
+    </details>
   </section>
 
 
@@ -711,7 +1267,7 @@
     <h3 class="section-h">Expressions</h3>
     <p class="goal" style="margin-bottom:10px;">Anything inside <code>{{ }}</code> is evaluated live using the current item's data.</p>
     <pre class="code">{{ $json.fieldName }}              // a field on the current item
-{{ $json.body.name }}              // webhook payloads land under .body
+{{ $json.chatInput }}              // the student's typed message, from a Chat Trigger
 {{ $('Node Name').item.json.x }}   // reach back to an earlier node
 {{ $now.toISO() }}                 // current timestamp</pre>
   </section>
@@ -743,36 +1299,32 @@
 
   <section class="card" id="s3">
     <div class="badge-row"><span class="badge level-basic">Workflow 2 · Basic</span></div>
-    <h2>Webhook Registration</h2>
-    <p class="goal">A student POSTs their name to a URL; the workflow generates a registration ID, composes a message, and replies with JSON — all live, no polling.</p>
+    <h2>Chat-Based Registration</h2>
+    <p class="goal">A student types just their name into n8n's built-in chat panel; the workflow generates a registration ID, composes a message, and replies right there in the chat — no terminal, no JSON.</p>
     <div class="flow">
-      <span class="node-chip trigger">Webhook</span><span class="flow-arrow">→</span>
+      <span class="node-chip trigger">When chat message received</span><span class="flow-arrow">→</span>
       <span class="node-chip">Generate ID</span><span class="flow-arrow">→</span>
-      <span class="node-chip">Build Confirmation</span><span class="flow-arrow">→</span>
-      <span class="node-chip action">Respond</span>
+      <span class="node-chip action">Build Confirmation</span>
     </div>
     <table class="nodes">
       <tr><th>Node</th><th>Type</th><th>Config</th></tr>
-      <tr><td>Webhook</td><td class="type">Webhook</td><td>POST, path <code>fest-register</code>, Response Mode = <i>Using Respond to Webhook Node</i>.</td></tr>
+      <tr><td>When chat message received</td><td class="type">Chat Trigger</td><td>Built-in n8n chat UI. The student's message arrives as <code>{{ $json.chatInput }}</code>.</td></tr>
       <tr><td>Generate Registration ID</td><td class="type">Set</td><td><code>registrationId</code> built from today's date + a random number.</td></tr>
-      <tr><td>Build Confirmation</td><td class="type">Set</td><td><code>confirmationMessage</code> — reaches back to the Webhook node's data with <code>$('Webhook').item.json.body.name</code>.</td></tr>
-      <tr><td>Respond to Webhook</td><td class="type">Respond to Webhook</td><td>Returns <code>{ registrationId, message, registeredAt }</code>.</td></tr>
+      <tr><td>Build Confirmation</td><td class="type">Set</td><td><code>output</code> — reaches back to the trigger's data with <code>$('When chat message received').item.json.chatInput</code>. This field name is what the chat panel displays as the reply.</td></tr>
     </table>
     <h3 class="section-h">Your checklist</h3>
     <ul class="checklist">
-      <li><input type="checkbox" id="wf2-1"><label for="wf2-1">Import <code>02-webhook-registration.json</code>.</label></li>
-      <li><input type="checkbox" id="wf2-2"><label for="wf2-2">Click <b>Listen for Test Event</b> on the Webhook node.</label></li>
-      <li><input type="checkbox" id="wf2-3"><label for="wf2-3">Send a test request (below) and confirm you get a JSON response back.</label></li>
-      <li><input type="checkbox" id="wf2-4"><label for="wf2-4">Open each node's output panel and trace how <code>name</code> becomes <code>confirmationMessage</code>.</label></li>
+      <li><input type="checkbox" id="wf2-1"><label for="wf2-1">Import <code>02-chat-registration.json</code>.</label></li>
+      <li><input type="checkbox" id="wf2-2"><label for="wf2-2">Click <b>Open Chat</b> on the Chat Trigger node.</label></li>
+      <li><input type="checkbox" id="wf2-3"><label for="wf2-3">Type just your name (below) and confirm you get a confirmation message back.</label></li>
+      <li><input type="checkbox" id="wf2-4"><label for="wf2-4">Open each node's output panel and trace how <code>chatInput</code> becomes <code>output</code>.</label></li>
     </ul>
-    <pre class="code">curl -X POST https://&lt;your-n8n&gt;/webhook-test/fest-register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Asha"}'</pre>
-    <div class="expect"><span class="k">Expected response</span><code>{ "registrationId": "TF-...", "message": "Hi Asha, you're registered...", "registeredAt": "..." }</code></div>
+    <pre class="code">Asha</pre>
+    <div class="expect"><span class="k">Expected reply</span><code>Hi Asha, you're registered for Campus Tech Fest! Your registration ID is TF-...</code></div>
     <h3 class="section-h">Common pitfalls</h3>
-    <div class="pitfall"><span class="tag">Data path</span><p>Forgetting <code>.body</code> — it's <code>$json.body.name</code>, not <code>$json.name</code>.</p></div>
-    <div class="pitfall"><span class="tag">Config</span><p>Response Mode not set to "Using Respond to Webhook Node" — the last node won't be able to control the reply.</p></div>
-    <div class="pitfall"><span class="tag">URL</span><p>Confusing the Test URL (only live while listening) with the Production URL.</p></div>
+    <div class="pitfall"><span class="tag">Data path</span><p>Reaching for <code>$json.name</code> out of habit — with a Chat Trigger it's <code>$json.chatInput</code>.</p></div>
+    <div class="pitfall"><span class="tag">Field name</span><p>Naming the final field anything other than <code>output</code> — the chat panel won't know what to display.</p></div>
+    <div class="pitfall"><span class="tag">Node reference</span><p>Renaming the trigger node breaks any <code>$('When chat message received')</code> reference elsewhere — update both together.</p></div>
   </section>
 
   <section class="card" id="s4">
@@ -834,25 +1386,117 @@
     <p class="goal">No starter file this time — build it from a blank canvas. But look closely: every node type here is one you've already used in Workflows 1–4. This is really a test of whether those four stuck, not a fifth new concept.</p>
     <h3 class="section-h">Requirements</h3>
     <ol class="steps">
-      <li><b>Trigger</b> — a webhook (POST), expecting <code>{ "name": "...", "branch": "...", "year": N, "question": "..." }</code>.</li>
-      <li><b>Build a student profile</b> — a Set node shaping the incoming fields into a clean record (exactly what Workflow 1's Set node did, just with real input).</li>
-      <li><b>Personalize the AI call</b> — same OpenRouter endpoint and credential as Workflow 4, but the system prompt is built <i>dynamically</i> from the profile's name/branch/year.</li>
-      <li><b>Extract and respond</b> — return <code>{ "greeting": "Hi Priya!", "answer": "..." }</code>.</li>
+      <li><b>Trigger</b> — a Chat Trigger. The student types one free-text message that can mention anything about themselves alongside their question, e.g. <code>Hi, I'm Priya, a 3rd-year Computer Science student. How do I register for the fest?</code> No JSON, no structured fields.</li>
+      <li><b>Capture the message</b> — a Set node that pulls <code>chatInput</code> into a clearly-named field (exactly what Workflow 1's Set node did, just with real input).</li>
+      <li><b>Personalize the AI call</b> — same OpenRouter endpoint and credential as Workflow 4, with a system prompt that tells the model to personalize using whatever name/year/branch the student happens to mention — the model does the "extraction," not you.</li>
+      <li><b>Extract and reply</b> — pull the answer out of the API response into a field literally named <code>output</code> (same convention as Workflow 4) so it shows up as the chat reply.</li>
     </ol>
     <h3 class="section-h">Where to look</h3>
     <p style="margin: 0 0 10px 0; color: var(--ink-soft); font-size: 0.92rem;">Four ideas, all recombined from Workflows 1–4 — no new node types:</p>
     <ul class="checklist">
-      <li><input type="checkbox" id="wf5-hint1"><label for="wf5-hint1"><b>Set</b> (Workflow 1) — to shape the incoming webhook data into a profile before using it.</label></li>
-      <li><input type="checkbox" id="wf5-hint2"><label for="wf5-hint2"><b>Webhook + Respond to Webhook</b> (Workflow 2) — same trigger/response shape.</label></li>
+      <li><input type="checkbox" id="wf5-hint1"><label for="wf5-hint1"><b>Set</b> (Workflow 1) — to capture the incoming chat message before using it.</label></li>
+      <li><input type="checkbox" id="wf5-hint2"><label for="wf5-hint2"><b>Chat Trigger + <code>output</code> field</b> (Workflow 2) — same trigger/reply shape, no Respond node needed.</label></li>
       <li><input type="checkbox" id="wf5-hint3"><label for="wf5-hint3"><b>HTTP Request calling OpenRouter</b> (Workflow 4) — reuse your existing "OpenRouter API Key" credential.</label></li>
-      <li><input type="checkbox" id="wf5-hint4"><label for="wf5-hint4">Build the system prompt with string concatenation: <code>"...for a " + $json.year + "-year " + $json.branch + "..."</code> — just an expression, same <code>{{ }}</code> syntax as everywhere else.</label></li>
+      <li><input type="checkbox" id="wf5-hint4"><label for="wf5-hint4">Write a system prompt that asks the <i>model itself</i> to personalize based on whatever the student mentions — no string concatenation or field extraction needed on your end.</label></li>
     </ul>
     <h3 class="section-h">How to check your work</h3>
-    <p style="margin: 0 0 8px 0; color: var(--ink-soft); font-size: 0.92rem;">Send a test request, then send a second one changing only <code>branch</code> or <code>year</code>. Confirm the AI's answer actually shifts tone — that's proof the personalization is really wired through, not just decoration on the response.</p>
-    <div class="warn"><b>Stretch goal:</b> add a default value for any missing field (e.g. if <code>branch</code> isn't provided, fall back to "a student") using an expression instead of requiring every field.</div>
+    <p style="margin: 0 0 8px 0; color: var(--ink-soft); font-size: 0.92rem;">Open the chat panel and send <code>Hi, I'm Priya, a 3rd-year Computer Science student. How do I register for the fest?</code>, then send a second message changing the year/branch, e.g. <code>I'm Rohan, a 1st-year Mechanical student — how do I register?</code> Confirm the AI's answer actually shifts tone between the two — that's proof the personalization is really wired through, not just decoration on the response.</p>
+    <div class="warn"><b>Stretch goal:</b> try a message that mentions nothing about the student at all — just a bare question — and confirm the assistant still replies sensibly instead of breaking.</div>
   </section>
 
   <section class="card" id="s7">
+    <div class="badge-row"><span class="badge level-medium">Workflow 6 · Basic-Medium</span></div>
+    <h2>An AI Agent That Logs to Google Sheets</h2>
+    <p class="goal">A student just types their feedback about the fest into the chat panel; an AI model classifies its sentiment, and the whole thing — feedback, sentiment, timestamp — lands as a new row in a Google Sheet you can open and skim anytime.</p>
+    <div class="flow">
+      <span class="node-chip trigger">When chat message received</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">Classify Sentiment (OpenRouter)</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Build Sheet Row</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">Log to Sheet</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">Build Reply</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>When chat message received</td><td class="type">Chat Trigger</td><td>The student's feedback arrives as-is, in <code>{{ $json.chatInput }}</code>. Feedback is anonymous — no name needed.</td></tr>
+      <tr><td>Classify Sentiment (OpenRouter)</td><td class="type">HTTP Request</td><td>Asks the model to reply with exactly one word: Positive, Neutral, or Negative.</td></tr>
+      <tr><td>Build Sheet Row</td><td class="type">Set</td><td>Combines the original feedback with the sentiment and a timestamp into one clean record.</td></tr>
+      <tr><td>Log to Sheet</td><td class="type">Google Sheets</td><td>Operation <b>Append</b> — adds the record as a new row in the <code>Feedback</code> tab.</td></tr>
+      <tr><td>Build Reply</td><td class="type">Set</td><td><code>output</code> — a short thank-you naming the detected sentiment, shown in the chat.</td></tr>
+    </table>
+    <div class="warn"><b>Before running this one:</b> open "Log to Sheet", attach your Google Sheets credential, and replace the placeholder <code>documentId</code> with your own spreadsheet's ID (the long string in its URL between <code>/d/</code> and <code>/edit</code>). Make sure a <code>Feedback</code> tab exists with header columns <code>feedback</code>, <code>sentiment</code>, <code>submittedAt</code>.</div>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf6-1"><label for="wf6-1">Import <code>06-feedback-logger-sheets.json</code>.</label></li>
+      <li><input type="checkbox" id="wf6-2"><label for="wf6-2">Attach your OpenRouter credential and your Google Sheets credential.</label></li>
+      <li><input type="checkbox" id="wf6-3"><label for="wf6-3">Point the sheet's <code>documentId</code> at your own spreadsheet and confirm the <code>Feedback</code> tab has the right headers.</label></li>
+      <li><input type="checkbox" id="wf6-4"><label for="wf6-4">Click <b>Open Chat</b> and type a real piece of feedback (below).</label></li>
+      <li><input type="checkbox" id="wf6-5"><label for="wf6-5">Open the spreadsheet and confirm a new row appeared with a sentiment label.</label></li>
+    </ul>
+    <pre class="code">Loved the workshops but the queues were long.</pre>
+    <div class="expect"><span class="k">Expected reply</span><code>Thanks for your feedback! I sensed a ... tone — noted for the organizers.</code> (with the model's sentiment label filled in) — and a new row in your sheet.</div>
+  </section>
+
+  <section class="card" id="s8">
+    <div class="badge-row"><span class="badge level-basic">Workflow 7 · Basic</span></div>
+    <h2>A Daily Tech News Digest</h2>
+    <p class="goal">Every morning, n8n fetches the day's top technology headlines from a public news API and composes them into a single digest message — no API key required.</p>
+    <div class="flow">
+      <span class="node-chip trigger">Every Morning at 8am</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">Fetch Top Tech News</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Build Digest</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">Digest Ready</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>Every Morning at 8am</td><td class="type">Schedule Trigger</td><td>Fires daily at 08:00, same shape as Workflow 3.</td></tr>
+      <tr><td>Fetch Top Tech News</td><td class="type">HTTP Request</td><td>GET <code>saurav.tech/NewsAPI/top-headlines/category/technology/us.json</code> — a free, no-key mirror of a real news API.</td></tr>
+      <tr><td>Build Digest</td><td class="type">Set</td><td>Pulls the top 3 <code>articles[]</code> titles/URLs into a formatted <code>digestText</code> string.</td></tr>
+      <tr><td>Digest Ready</td><td class="type">No Operation</td><td>Inert endpoint — inspect the finished digest in its input panel.</td></tr>
+    </table>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf7-1"><label for="wf7-1">Import <code>07-daily-news-digest.json</code>.</label></li>
+      <li><input type="checkbox" id="wf7-2"><label for="wf7-2">Since the schedule won't fire on demand, click <b>Execute workflow</b> to test manually.</label></li>
+      <li><input type="checkbox" id="wf7-3"><label for="wf7-3">Open <b>Fetch Top Tech News</b>'s output and find the <code>articles</code> array.</label></li>
+      <li><input type="checkbox" id="wf7-4"><label for="wf7-4">Open <b>Digest Ready</b> and read the composed <code>digestText</code>.</label></li>
+      <li><input type="checkbox" id="wf7-5"><label for="wf7-5"><b>Stretch:</b> swap the URL for a different category (e.g. <code>business</code>, <code>science</code>) and re-run.</label></li>
+    </ul>
+    <div class="expect"><span class="k">Expected output</span>A <code>digestText</code> listing 3 real, current headlines with their URLs.</div>
+  </section>
+
+  <section class="card" id="s9">
+    <div class="badge-row"><span class="badge level-medium">Workflow 8 · Medium</span></div>
+    <h2>The Duplicate Registration Guard</h2>
+    <p class="goal">A student tries to register twice with the same email. This workflow reads existing registrations from a Google Sheet, checks for a match in code, then branches: reject duplicates, log everyone else. This is the handbook's first real branching logic.</p>
+    <div class="flow">
+      <span class="node-chip trigger">When chat message received</span><span class="flow-arrow">→</span>
+      <span class="node-chip data">Read All Registrations</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Check Duplicate</span><span class="flow-arrow">→</span>
+      <span class="node-chip">Already Registered?</span><span class="flow-arrow">→</span>
+      <span class="node-chip action">Reply Duplicate / Append + Reply Success</span>
+    </div>
+    <table class="nodes">
+      <tr><th>Node</th><th>Type</th><th>Config</th></tr>
+      <tr><td>When chat message received</td><td class="type">Chat Trigger</td><td>The student types just their email, e.g. <code>priya@example.com</code>, arriving as <code>{{ $json.chatInput }}</code>.</td></tr>
+      <tr><td>Read All Registrations</td><td class="type">Google Sheets</td><td>Operation <b>Read</b> — returns every existing row in the <code>Registrations</code> tab.</td></tr>
+      <tr><td>Check Duplicate</td><td class="type">Code</td><td>Compares the incoming email against every row returned; outputs one item with <code>alreadyRegistered: true/false</code>.</td></tr>
+      <tr><td>Already Registered?</td><td class="type">If</td><td>Branches on <code>alreadyRegistered</code>.</td></tr>
+      <tr><td>Append Registration</td><td class="type">Google Sheets</td><td>Only runs on the "false" branch — Operation <b>Append</b> adds the new registration.</td></tr>
+      <tr><td>Reply Duplicate / Reply Success</td><td class="type">Set</td><td>Each branch ends with its own <code>output</code> field, shown in the chat.</td></tr>
+    </table>
+    <div class="warn"><b>Before running this one:</b> attach your Google Sheets credential to both Google Sheets nodes, and point both <code>documentId</code> fields at your own spreadsheet. Make sure a <code>Registrations</code> tab exists with headers <code>email</code>, <code>registeredAt</code>.</div>
+    <h3 class="section-h">Your checklist</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="wf8-1"><label for="wf8-1">Import <code>08-registration-guard.json</code>.</label></li>
+      <li><input type="checkbox" id="wf8-2"><label for="wf8-2">Attach your Google Sheets credential to <b>Read All Registrations</b> and <b>Append Registration</b>.</label></li>
+      <li><input type="checkbox" id="wf8-3"><label for="wf8-3">Type a new email in the chat — confirm it appends and replies that you're registered.</label></li>
+      <li><input type="checkbox" id="wf8-4"><label for="wf8-4">Type the exact same email again — confirm it now replies that you're already registered, instead of adding a second row.</label></li>
+    </ul>
+    <pre class="code">priya@example.com</pre>
+    <div class="expect"><span class="k">Expected reply</span>First message: <code>You're registered for Campus Tech Fest! ...</code>. Same email again: <code>This email is already registered for the fest.</code></div>
+  </section>
+
+  <section class="card" id="s10">
     <div class="badge-row"><span class="badge">Reference</span></div>
     <h2>Feature Cheat Sheet</h2>
     <table class="cheat">
@@ -860,14 +1504,18 @@
       <tr><td>Manual start</td><td class="mono">Manual Trigger</td><td>Workflow 1</td></tr>
       <tr><td>Transform data</td><td class="mono">Set (Edit Fields)</td><td>Workflow 1</td></tr>
       <tr><td>Inert stop / inspect</td><td class="mono">No Operation</td><td>Workflow 1</td></tr>
-      <tr><td>Receive HTTP requests</td><td class="mono">Webhook</td><td>Workflow 2</td></tr>
-      <tr><td>Reply to a caller</td><td class="mono">Respond to Webhook</td><td>Workflow 2</td></tr>
+      <tr><td>Chat-based trigger + reply</td><td class="mono">Chat Trigger + <code>output</code> field</td><td>Workflow 2</td></tr>
       <tr><td>Run on a timer</td><td class="mono">Schedule Trigger</td><td>Workflow 3</td></tr>
       <tr><td>Call an external API</td><td class="mono">HTTP Request</td><td>Workflow 3</td></tr>
       <tr><td>Call an LLM (any provider)</td><td class="mono">HTTP Request + OpenRouter</td><td>Workflow 4</td></tr>
-      <tr><td>Keep secrets out of nodes</td><td class="mono">Header Auth credential</td><td>Workflow 4</td></tr>
+      <tr><td>Keep secrets out of nodes</td><td class="mono">OpenRouter credential</td><td>Workflow 4</td></tr>
       <tr><td>Dynamic prompts from data</td><td class="mono">Expressions in an HTTP body</td><td>Workflow 5</td></tr>
       <tr><td>Reaching back multiple hops</td><td class="mono"><code>$('Node Name')</code></td><td>Workflow 5</td></tr>
+      <tr><td>Write a row to a spreadsheet</td><td class="mono">Google Sheets (Append)</td><td>Workflow 6</td></tr>
+      <tr><td>Call a public API with no auth</td><td class="mono">HTTP Request</td><td>Workflow 7</td></tr>
+      <tr><td>Read every row from a spreadsheet</td><td class="mono">Google Sheets (Read)</td><td>Workflow 8</td></tr>
+      <tr><td>Custom logic in JavaScript</td><td class="mono">Code</td><td>Workflow 8</td></tr>
+      <tr><td>Branch the flow in two directions</td><td class="mono">If</td><td>Workflow 8</td></tr>
     </table>
   </section>
 
