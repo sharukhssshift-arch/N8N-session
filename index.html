@@ -707,7 +707,7 @@
         },
         &quot;sendBody&quot;: true,
         &quot;specifyBody&quot;: &quot;json&quot;,
-        &quot;jsonBody&quot;: &quot;={\n  \&quot;model\&quot;: \&quot;google/gemini-2.0-flash-001\&quot;,\n  \&quot;messages\&quot;: [\n    {\n      \&quot;role\&quot;: \&quot;system\&quot;,\n      \&quot;content\&quot;: \&quot;Classify the sentiment of this student feedback as exactly one word: Positive, Neutral, or Negative. Reply with only that word.\&quot;\n    },\n    {\n      \&quot;role\&quot;: \&quot;user\&quot;,\n      \&quot;content\&quot;: {{ JSON.stringify($json.chatInput) }}\n    }\n  ]\n}&quot;,
+        &quot;jsonBody&quot;: &quot;={\n  \&quot;model\&quot;: \&quot;meta-llama/llama-3.1-8b-instruct\&quot;,\n  \&quot;messages\&quot;: [\n    {\n      \&quot;role\&quot;: \&quot;system\&quot;,\n      \&quot;content\&quot;: \&quot;Classify the sentiment of this student feedback as exactly one word: Positive, Neutral, or Negative. Reply with only that word.\&quot;\n    },\n    {\n      \&quot;role\&quot;: \&quot;user\&quot;,\n      \&quot;content\&quot;: {{ JSON.stringify($json.chatInput) }}\n    }\n  ]\n}&quot;,
         &quot;options&quot;: {}
       },
       &quot;id&quot;: &quot;b6000000-1000-4000-8000-000000000002&quot;,
